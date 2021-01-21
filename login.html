@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>登录</h1>
+
+    <form action="">
+          账号: <input type="text" placeholder="用户名/手机号/Email" name="name"> <br>
+          密码: <input type="password" name="pwd"> <br>
+                <input type="submit" value="登录" id="sub">
+    </form>
+</body>
+</html>
+<script>
+    
+    //  获取表单 forms 获取的是一个数组 
+    var _form = document.forms[0]
+       _form.addEventListener("submit",function(e){
+       e.preventDefault()  //阻止表单提交
+    //  获取表单中的input元素
+       var _input = _form.getElementsByTagName("input")
+    // 定义空字符串  拼接input的value值
+    var str = ""
+    //遍历数组
+    for(i=0;i<_input.length;i++){
+        // 过滤没有name的input
+        if(_input[i].getAttribute("name")==null){
+             continue
+        }
+        //获取name属性
+        var key = _input[i].getAttribute("name")
+        // 获取value值
+        var val = _input[i].value
+
+        //拼接属性和值 
+        str += key += "=" + val +"&" 
+    }
+         //去除字符串最后的 & 符号
+        var str = str.substring(0,str.length-1)
+            
+        //  实例化XML对象
+        var xhr = new XMLHttpRequest
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState==4&&xhr.status==200){
+               var data = (JSON.parse(xhr.responseText))
+               if(data.error==0){
+                  alert("登录成功")
+                  window.location.href = "my.php"                
+                }else {
+                   alert(data.font)
+               }
+            }
+        }
+        xhr.open("POST",'login.php')
+        xhr.setRequestHeader('content-type','application/x-www-form-urlencoded')
+        xhr.send(str)
+      })
+
+</script>

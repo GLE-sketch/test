@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+      <script src="./js/jquery-3.2.1.min.js"></script>
+</head>
+
+<body>
+      <form action="">
+            账号
+            <input type="text" name="name" id="name">
+            <span style="color: red;" id="span_name">*</span><br>
+            密码
+            <input type="password" name="pwd" id="pwd">
+            <span style="color: red;" id="span_pwd">*</span><br>
+            确认密码
+            <input type="password" name="pwd1" id="pwd1">
+            <span style="color: red;" id="span_pwd1">*</span><br>
+            邮箱
+            <input type="email" name="em" id="em">
+            <span style="color: red;" id="span_em">*</span><br>
+            手机号
+            <input type="text" name="tel" id="tel">
+            <span style="color: red;" id="span_tel">*</span><br>
+            <button id="sub">注册</button><a href="login.html">已有帐号?去登陆</a>
+      </form>
+</body>
+</html>
+<script>
+
+      $("#pwd").on('blur', function () {
+            if ($(this).val() == "") {
+                  $("#span_pwd").html("<span style='color:red'>密码必填</span>")
+            } else {
+                  $("#span_pwd").html("<span style='color:green'>√</span>")
+            }
+      })
+
+
+      $("#pwd1").on('blur', function () {
+            if ($(this).val() == "") {
+                  $("#span_pwd1").html("<span style='color:red'>密码必填</span>")
+            } else {
+                  $("#span_pwd1").html("<span style='color:green'>√</span>")
+            }
+      })
+
+
+        //失去焦点获取表单 input的值
+      //获取账号的值
+      function ajax(param, node, font) {
+        var xhr = new XMLHttpRequest
+        xhr.onreadystatechange = function () {
+              if (xhr.readyState === xhr.DONE) {
+                    if (xhr.status == 200) {
+                          var data = JSON.parse(xhr.responseText)
+                          if (data.error == 0) {
+                                font.innerHTML = "<span style='color:green'>" + data.font + "</span>"
+                          } else {
+                                font.innerHTML = "<span style='color:red'>" + data.font + "</span>"
+                                node.value = ""
+                                node.focus();
+                          }
+                    }
+              }
+        }
+        xhr.open('GET', 'check.php?name=' + param)
+        xhr.send()
+  }
+
+
+  var account = document.getElementById("name").addEventListener("blur", function () {
+        var account = this.value
+        if (account == "") {
+              document.getElementById("span_name").innerHTML = "<span style='color:red'>账号必填</span>"
+              return
+        } else {
+              var font_name = document.getElementById("span_name")
+              ajax(account, this, font_name)
+        }
+  })
+
+
+  var em = document.getElementById("em").addEventListener("blur", function () {
+        var em = this.value
+        if (em == "") {
+              document.getElementById("span_em").innerHTML = "<span style='color:red'>邮箱必填</span>"
+              return
+        } else {
+              var font_em = document.getElementById("span_em")
+              console.log(font_em)
+              ajax(em, this, font_em)
+        }
+  })
+  var tel = document.getElementById("tel").addEventListener("blur", function () {
+        var tel = this.value
+        if (tel == "") {
+              document.getElementById("span_tel").innerHTML = "<span style='color:red'>手机号必填</span>"
+              return
+        } else {
+              var font_tel = document.getElementById("span_tel")
+              ajax(tel,this,font_tel)
+        }
+  }) 
+
+
+  
+        //  获取表单 forms 获取的是一个数组 
+        var _form = document.forms[0]
+        _form.addEventListener("submit",function(e){
+        e.preventDefault()  //阻止表单提交
+     //  获取表单中的input元素
+        var _input = _form.getElementsByTagName("input")
+     // 定义空字符串  拼接input的value值
+     var str = ""
+     //遍历数组
+     for(i=0;i<_input.length;i++){
+         // 过滤没有name的input
+         if(_input[i].getAttribute("name")==null){
+             continue
+         }
+         //获取name属性
+         var key = _input[i].getAttribute("name")
+         // 获取value值
+         var val = _input[i].value
+ 
+         //拼接属性和值 
+         str += key += "=" + val +"&" 
+     }
+          //去除字符串最后的 & 符号
+         var str = str.substring(0,str.length-1)
+          var xhr = new XMLHttpRequest
+          xhr.onreadystatechange = function(){
+            if(xhr.readyState === xhr.DONE){
+                  if(xhr.status==200){
+                       var data = JSON.parse(xhr.responseText)
+                       if(data.error==0){
+                           alert(data.font)
+                           window.location.href = "login.html"             
+                       }else {
+                          alert(data.font)
+                       }
+                  }
+              }
+          }
+          xhr.open("POST","add.php")
+          xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded")
+          xhr.send(str)   
+       })
+    
+ 
+
+
+</script>
